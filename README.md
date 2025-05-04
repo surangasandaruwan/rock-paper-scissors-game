@@ -1,35 +1,81 @@
-# ✊✋✌️ RockPaperScissorsVision CS402.3
 
-A computer vision-based Rock-Paper-Scissors game using Python and OpenCV! Detects human hand gestures and challenges the user in real-time using image processing techniques.
+# 🪨✂️📄 Rock Paper Scissors Game
 
----
-
-## 🎯 Features
-
-- 📸 Detects hand gestures from images (Rock, Paper, Scissors)
-- 🎮 Computer generates its own gesture and determines the winner
-- ⚙️ Shows real-time image processing steps:
-  - Grayscale
-  - Thresholding
-  - Binarization
-  - Contour detection
-- 🖼️ Visual output of both gestures and results
-- 🌟 Optionally extendable to “Rock, Paper, Scissors, Lizard, Spock” mode!
+A simple Rock-Paper-Scissors game using Python, NumPy, and OpenCV.
 
 ---
 
-## 🛠️ Technologies Used
+## 🚀 How to Run the Project
 
-- 🐍 Python 3
-- 📷 OpenCV
-- 🧠 NumPy
-- 💡 Image Processing (thresholding, contour detection, etc.)
+Follow these steps to set up and run the project in your local environment.
 
 ---
 
-## 🚀 Getting Started
+### 🔁 1. Clone the Repository
 
-### 📦 Requirements
+Open your terminal and run:
 
 ```bash
-pip install opencv-python numpy
+git clone https://github.com/surangasandaruwan/rock-paper-scissors-game.git
+```
+
+---
+
+### 📂 2. Change into the Project Directory
+
+```bash
+cd rock-paper-scissors-game
+```
+
+---
+
+### 🖥️ 3. Open the Project in VS Code
+
+If you have VS Code installed, open the project with:
+
+```bash
+code .
+```
+
+---
+
+### 🐍 4. Requirements
+
+Make sure you have **Python 3** installed on your system.
+
+You also need the following Python libraries:
+
+- `numpy`
+- `opencv-python`
+
+Install them by running:
+
+```bash
+pip install numpy opencv-python
+```
+
+> 💡 Tip: It's recommended to use a virtual environment.
+
+---
+
+### ▶️ 5. Run the Project
+
+Once everything is set up, you can run the project with:
+
+```bash
+python3 rps.py
+```
+
+
+---
+
+## 🛑 .gitignore Note
+
+If you are using a virtual environment, make sure to exclude it by adding this line to `.gitignore`:
+
+```
+myenv/
+```
+
+---
+
