@@ -1,4 +1,3 @@
-
 # 🪨✂️📄 Rock Paper Scissors Game
 
 A simple Rock-Paper-Scissors game using Python, NumPy, and OpenCV.
@@ -63,9 +62,10 @@ pip install numpy opencv-python
 Once everything is set up, you can run the project with:
 
 ```bash
-python3 rps.py
+python3 main.py
 ```
 
+(Replace `main.py` with the actual script filename if it's different.)
 
 ---
 
@@ -79,3 +79,29 @@ myenv/
 
 ---
 
+---
+
+## 🛠️ How to Make Changes to the Project
+
+If you want to contribute or make changes to the project, follow these steps:
+
+1. **Switch to a branch**  
+   In VS Code, open the branch menu and switch to your feature branch.  
+   If you don't have a branch yet, create one.
+
+2. **Make your changes**  
+   Modify the code to improve or fix something.
+
+3. **Commit your changes**  
+   Once you're done, commit your changes to your own branch.
+
+4. **Push your branch**  
+   Push the committed changes to your GitHub fork or the main repository.
+
+5. **Create a Pull Request (PR)**  
+   Go to the GitHub webpage and open a pull request from your branch to the `main` branch.
+
+6. **Wait for Review**  
+   Do **not** merge your own pull request. Wait for someone else to review and merge it.
+
+> This helps maintain code quality and ensures that all contributions are properly reviewed.
