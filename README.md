@@ -1,6 +1,6 @@
 # 🪨✂️📄 Rock Paper Scissors Game
 
-A simple Rock-Paper-Scissors game using Python, NumPy, and OpenCV.
+Rock-Paper-Scissors game using Python, NumPy, and OpenCV.
 
 ---
 
