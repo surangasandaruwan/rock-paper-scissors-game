@@ -5,23 +5,16 @@ def detect_gesture(roi):
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (35, 35), 0)
     _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
     contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
     if len(contours) == 0:
-        return "No hand detected"  # Return "No hand detected" if no contours found
-
+        return "No hand detected"
     cnt = max(contours, key=cv2.contourArea)
     hull = cv2.convexHull(cnt, returnPoints=False)
-
     if len(hull) < 3:
         return "rock"
-
     defects = cv2.convexityDefects(cnt, hull)
-
     if defects is None:
         return "rock"
-
     finger_count = 0
     for i in range(defects.shape[0]):
         s, e, f, d = defects[i, 0]
@@ -32,10 +25,8 @@ def detect_gesture(roi):
         b = np.linalg.norm(np.array(far) - np.array(start))
         c = np.linalg.norm(np.array(end) - np.array(far))
         angle = np.arccos((b**2 + c**2 - a**2) / (2 * b * c + 1e-5))
-
         if angle <= np.pi / 2:
             finger_count += 1
-
     if finger_count == 0:
         return "rock"
     elif finger_count <= 2:
@@ -53,61 +44,87 @@ def get_winner(p1, p2):
     else:
         return "Player 2 Wins"
 
+# Global flags
+exit_game = False
+stop_game = False
+
+# Define button rectangles
+btn_stop = ((850, 900), (1070, 980))  # top-left, bottom-right
+btn_exit = ((1150, 900), (1350, 980))
+
+def mouse_click(event, x, y, flags, param):
+    global exit_game, stop_game
+    if event == cv2.EVENT_LBUTTONDOWN:
+        if btn_stop[0][0] <= x <= btn_stop[1][0] and btn_stop[0][1] <= y <= btn_stop[1][1]:
+            stop_game = True
+        elif btn_exit[0][0] <= x <= btn_exit[1][0] and btn_exit[0][1] <= y <= btn_exit[1][1]:
+            exit_game = True
+
+# Start video capture
 cap = cv2.VideoCapture(0)
+cv2.namedWindow("Rock Paper Scissors - Two Player")
+cv2.setMouseCallback("Rock Paper Scissors - Two Player", mouse_click)
+
+# Initialize scores
+p1_score = p2_score = draws = 0
+p1_move = p2_move = result = ""
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
-
     frame = cv2.flip(frame, 1)
-    frame = cv2.resize(frame, (1920, 1080))  # Resize to full HD
+    frame = cv2.resize(frame, (1920, 1080))
 
-
-    # Define ROI for Player 1 (left side)
-    p1_roi = frame[200:600, 100:600]  # [y1:y2, x1:x2]
+    # Player 1 ROI
+    p1_roi = frame[200:600, 100:600]
     cv2.rectangle(frame, (100, 200), (600, 600), (0, 255, 0), 4)
     cv2.putText(frame, "Player 1", (100, 190), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
 
-    # Define ROI for Player 2 (right side)
+    # Player 2 ROI
     p2_roi = frame[200:600, 1320:1820]
     cv2.rectangle(frame, (1320, 200), (1820, 600), (255, 0, 0), 4)
     cv2.putText(frame, "Player 2", (1320, 190), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255, 0, 0), 3)
 
+    # Display last moves and result
+    cv2.putText(frame, f"P1: {p1_move}", (100, 650), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(frame, f"P2: {p2_move}", (1320, 650), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    result_text = f"Result: {result}" if result else "Waiting for hand gestures..."
+    cv2.putText(frame, result_text, (700, 750), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
 
-    # Detect gesture for both players
-    p1_move = detect_gesture(p1_roi)
-    p2_move = detect_gesture(p2_roi)
+    # Draw score
+    score_text = f"Score - P1: {p1_score}  P2: {p2_score}  Draws: {draws}"
+    cv2.putText(frame, score_text, (50, 850), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
-    # Show moves for each player
-    p1_move_text = f"P1: {p1_move if p1_move != 'No hand detected' else 'No hand detected'}"
-    p2_move_text = f"P2: {p2_move if p2_move != 'No hand detected' else 'No hand detected'}"
+    # Draw Buttons
+    cv2.rectangle(frame, btn_stop[0], btn_stop[1], (0, 255, 255), -1)
+    cv2.putText(frame, "Stop", (btn_stop[0][0] + 10, btn_stop[1][1] - 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 3)
 
-    cv2.putText(frame, p1_move_text, (100, 650), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.putText(frame, p2_move_text, (1320, 650), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    cv2.rectangle(frame, btn_exit[0], btn_exit[1], (0, 0, 255), -1)
+    cv2.putText(frame, "Close", (btn_exit[0][0] + 30, btn_exit[1][1] - 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 3)
 
-    # Determine the result
-    result = get_winner(p1_move, p2_move)
-
-    # Show result at the bottom
-    text = f"Result: {result}"
-    (text_width, _), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1.5, 4)
-    x_position = (1920 - text_width) // 2
-    cv2.putText(frame, text, (x_position, 1000), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
-
-
-    # Create full-screen window
-    cv2.namedWindow("Rock Paper Scissors - Two Player", cv2.WND_PROP_FULLSCREEN)
-    cv2.setWindowProperty("Rock Paper Scissors - Two Player", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-    # Display the frame
+    # Show Frame
     cv2.imshow("Rock Paper Scissors - Two Player", frame)
 
-    # Exit loop when 'q' is pressed
-    key = cv2.waitKey(1)
-    if key == ord('q'):
+    # Detect moves continuously
+    if not stop_game:
+        p1_move = detect_gesture(p1_roi)
+        p2_move = detect_gesture(p2_roi)
+        result = get_winner(p1_move, p2_move)
+        if result == "Player 1 Wins":
+            p1_score += 1
+        elif result == "Player 2 Wins":
+            p2_score += 1
+        elif result == "Draw":
+            draws += 1
+
+    # Check for stop or exit
+    if stop_game:
+        break
+    if exit_game or cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release resources
 cap.release()
 cv2.destroyAllWindows()
