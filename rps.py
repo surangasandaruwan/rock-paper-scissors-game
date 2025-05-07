@@ -5,6 +5,10 @@ def detect_gesture(roi):
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (35, 35), 0)
     _, thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+    cv2.imshow("Grayscale", gray)
+    cv2.imshow("Threshold", thresh)
+
     contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if len(contours) == 0:
         return "No hand detected"
