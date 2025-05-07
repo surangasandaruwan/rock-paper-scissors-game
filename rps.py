@@ -45,18 +45,18 @@ def get_winner(p1, p2):
         return "Player 2 Wins"
 
 # Global flags
-trigger_next_round = False
 exit_game = False
+stop_game = False
 
 # Define button rectangles
-btn_next_round = ((850, 900), (1070, 980))  # top-left, bottom-right
+btn_stop = ((850, 900), (1070, 980))  # top-left, bottom-right
 btn_exit = ((1150, 900), (1350, 980))
 
 def mouse_click(event, x, y, flags, param):
-    global trigger_next_round, exit_game
+    global exit_game, stop_game
     if event == cv2.EVENT_LBUTTONDOWN:
-        if btn_next_round[0][0] <= x <= btn_next_round[1][0] and btn_next_round[0][1] <= y <= btn_next_round[1][1]:
-            trigger_next_round = True
+        if btn_stop[0][0] <= x <= btn_stop[1][0] and btn_stop[0][1] <= y <= btn_stop[1][1]:
+            stop_game = True
         elif btn_exit[0][0] <= x <= btn_exit[1][0] and btn_exit[0][1] <= y <= btn_exit[1][1]:
             exit_game = True
 
@@ -89,7 +89,7 @@ while True:
     # Display last moves and result
     cv2.putText(frame, f"P1: {p1_move}", (100, 650), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     cv2.putText(frame, f"P2: {p2_move}", (1320, 650), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-    result_text = f"Result: {result}" if result else "Press Next Round to start"
+    result_text = f"Result: {result}" if result else "Waiting for hand gestures..."
     cv2.putText(frame, result_text, (700, 750), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 255), 4)
 
     # Draw score
@@ -97,8 +97,8 @@ while True:
     cv2.putText(frame, score_text, (50, 850), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
 
     # Draw Buttons
-    cv2.rectangle(frame, btn_next_round[0], btn_next_round[1], (0, 255, 255), -1)
-    cv2.putText(frame, "Next Round", (btn_next_round[0][0] + 10, btn_next_round[1][1] - 20),
+    cv2.rectangle(frame, btn_stop[0], btn_stop[1], (0, 255, 255), -1)
+    cv2.putText(frame, "Stop", (btn_stop[0][0] + 10, btn_stop[1][1] - 20),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 0), 3)
 
     cv2.rectangle(frame, btn_exit[0], btn_exit[1], (0, 0, 255), -1)
@@ -108,8 +108,8 @@ while True:
     # Show Frame
     cv2.imshow("Rock Paper Scissors - Two Player", frame)
 
-    # Wait for round trigger or exit
-    if trigger_next_round:
+    # Detect moves continuously
+    if not stop_game:
         p1_move = detect_gesture(p1_roi)
         p2_move = detect_gesture(p2_roi)
         result = get_winner(p1_move, p2_move)
@@ -119,8 +119,10 @@ while True:
             p2_score += 1
         elif result == "Draw":
             draws += 1
-        trigger_next_round = False
 
+    # Check for stop or exit
+    if stop_game:
+        break
     if exit_game or cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
