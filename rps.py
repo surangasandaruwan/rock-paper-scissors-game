@@ -66,9 +66,14 @@ def get_winner(p1, p2):
         return "Draw"
     else:
         return rules.get((p1, p2), "Invalid Move")
+    
 
 cap = cv2.VideoCapture(0)
 cv2.namedWindow("Rock Paper Scissors - Two Player")
+def mouse_click(event, x, y, flags, param):
+    if event == cv2.EVENT_LBUTTONDOWN:
+        print(f"Mouse clicked at ({x}, {y})")
+
 cv2.setMouseCallback("Rock Paper Scissors - Two Player", mouse_click)
 
 # Initialize scores
@@ -122,6 +127,8 @@ while True:
     # Display the frame
     cv2.imshow("Rock Paper Scissors - Two Player", frame)
 
+    stop_game = False;
+
     # Detect moves continuously
     if not stop_game:
         p1_move = detect_gesture(p1_roi)
@@ -137,6 +144,7 @@ while True:
     # Check for stop or exit
     if stop_game:
         break
+    exit_game = False
     if exit_game or cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
