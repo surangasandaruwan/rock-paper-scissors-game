@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RPSLS Game</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Rock, Paper, Scissors, Lizard, Spock</h1>
+    <form method="POST" action="/play">
+      <button type="submit">Play Game</button>
+    </form>
+
+    {% if player %}
+    <div class="result">
+      <p><strong>You:</strong> {{ player }}</p>
+      <p><strong>Computer:</strong> {{ computer }}</p>
+      <h2>{{ result }}</h2>
+    </div>
+    {% endif %}
+  </body>
+</html>
